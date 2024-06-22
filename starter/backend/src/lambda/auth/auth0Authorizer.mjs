@@ -1,10 +1,11 @@
-import Axios from 'axios'
+import axios from 'axios'
 import jsonwebtoken from 'jsonwebtoken'
 import { createLogger } from '../../utils/logger.mjs'
 
-const logger = createLogger('auth')
+const logger = createLogger('lambda.auth.auth0Authorizer')
 
-const jwksUrl = 'https://test-endpoint.auth0.com/.well-known/jwks.json'
+const jwksUrl =
+  'https://dev-lgel4r7r7wmuif5z.us.auth0.com/.well-known/jwks.json'
 
 export async function handler(event) {
   try {
@@ -46,8 +47,21 @@ async function verifyToken(authHeader) {
   const token = getToken(authHeader)
   const jwt = jsonwebtoken.decode(token, { complete: true })
 
-  // TODO: Implement token verification
-  return undefined;
+  try {
+    const res = await axios.get(jwksUrl)
+    const key = res?.data?.keys?.find((k) => k.kid === jwt.header.kid)
+    if (!key) {
+      throw new Error('Key not found')
+    }
+    const pem = key.x5c[0]
+    const cert = `-----BEGIN CERTIFICATE-----\n${pem}\n-----END CERTIFICATE-----`
+
+    return jsonwebtoken.verify(token, cert)
+  } catch {
+    logger.error('Verify token failed', { error })
+  }
+
+  return undefined
 }
 
 function getToken(authHeader) {
