@@ -64,22 +64,22 @@ export const deleteTodoById = async (userId, todoId) => {
   await dynamoDbClient.send(deleteCommand)
 }
 
-// export const saveImgUrl = async (userId, todoId, bucketName) => {
-//   try {
-//     const command = new UpdateCommand({
-//       TableName: todosTable,
-//       Key: { userId, todoId },
-//       ConditionExpression: 'attribute_exists(todoId)',
-//       UpdateExpression: 'set attachmentUrl = :attachmentUrl',
-//       ExpressionAttributeValues: {
-//         ':attachmentUrl': `https://${bucketName}.s3.amazonaws.com/${todoId}`
-//       }
-//     })
-//     logger.info(
-//       `Updating image url for a todo item: https://${bucketName}.s3.amazonaws.com/${todoId}`
-//     )
-//     await docClient.send(command)
-//   } catch (error) {
-//     logger.error(error)
-//   }
-// }
+export const attachImgUrlById = async (userId, todoId, bucketName) => {
+  try {
+    const updateCommand = new UpdateCommand({
+      TableName: todosTable,
+      Key: { userId, todoId },
+      ConditionExpression: 'attribute_exists(todoId)',
+      UpdateExpression: 'set attachmentUrl = :attachmentUrl',
+      ExpressionAttributeValues: {
+        ':attachmentUrl': `https://${bucketName}.s3.amazonaws.com/${todoId}`
+      }
+    })
+    logger.info(
+      `Updating image url for an existing todo item: https://${bucketName}.s3.amazonaws.com/${todoId}`
+    )
+    await dynamoDbClient.send(updateCommand)
+  } catch (error) {
+    logger.error(error)
+  }
+}
