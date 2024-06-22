@@ -1,7 +1,9 @@
 import * as uuid from 'uuid'
 import {
   getTodosByUserId,
-  createNewTodo
+  createNewTodo,
+  updateTodoById,
+  deleteTodoById
 } from '../repositories/todoRepository.mjs'
 import { createLogger } from '../utils/logger.mjs'
 
@@ -22,4 +24,14 @@ export const createTodo = async (userId, todo) => {
     done: false,
     ...todo
   })
+}
+
+export const updateTodo = async (userId, todoId, todo) => {
+  logger.info(`Updating todo id ${todoId}`)
+  return updateTodoById(userId, todoId, todo)
+}
+
+export const deleteTodo = async (userId, todoId) => {
+  logger.info(`Deleting todo id ${todoId}`)
+  return deleteTodoById(userId, todoId)
 }

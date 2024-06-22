@@ -38,31 +38,31 @@ export const createNewTodo = async (newTodo) => {
   return newTodo
 }
 
-// export const updateTodo = async (userId, todoId, updateData) => {
-//   logger.info(`Updating a todo item: ${todoId} from repository`)
-//   const command = new UpdateCommand({
-//     TableName: todosTable,
-//     Key: { userId, todoId },
-//     ConditionExpression: 'attribute_exists(todoId)',
-//     UpdateExpression: 'set #n = :name, dueDate = :dueDate, done = :done',
-//     ExpressionAttributeNames: { '#n': 'name' },
-//     ExpressionAttributeValues: {
-//       ':name': updateData.name,
-//       ':dueDate': updateData.dueDate,
-//       ':done': updateData.done
-//     }
-//   })
-//   await docClient.send(command)
-// }
+export const updateTodoById = async (userId, todoId, updateData) => {
+  logger.info(`Updating an existing todo id: ${todoId} on the Todos table`)
+  const updateCommand = new UpdateCommand({
+    TableName: todosTable,
+    Key: { userId, todoId },
+    ConditionExpression: 'attribute_exists(todoId)',
+    UpdateExpression: 'set #n = :name, dueDate = :dueDate, done = :done',
+    ExpressionAttributeNames: { '#n': 'name' },
+    ExpressionAttributeValues: {
+      ':name': updateData.name,
+      ':dueDate': updateData.dueDate,
+      ':done': updateData.done
+    }
+  })
+  await dynamoDbClient.send(updateCommand)
+}
 
-// export const deleteTodo = async (userId, todoId) => {
-//   logger.info(`Deleting a todo item: ${todoId} from repository`)
-//   const command = new DeleteCommand({
-//     TableName: todosTable,
-//     Key: { userId, todoId }
-//   })
-//   await docClient.send(command)
-// }
+export const deleteTodoById = async (userId, todoId) => {
+  logger.info(`Deleting an existing todo id: ${todoId} on the Todos table`)
+  const deleteCommand = new DeleteCommand({
+    TableName: todosTable,
+    Key: { userId, todoId }
+  })
+  await dynamoDbClient.send(deleteCommand)
+}
 
 // export const saveImgUrl = async (userId, todoId, bucketName) => {
 //   try {
